@@ -13,6 +13,9 @@
       <label for="selectedYear">Year:</label>
       <input type="text" id="selectedYear" name="selectedYear" required />
       
+      <label for="selectedMonth">Month:</label>
+      <input type="text" id="selectedMonth" name="selectedMonth" required />
+      
       <input type="text" id="userColumn" name="userColumn" required value="User" hidden/>
 
       <button type="submit">Generate Excel</button>
@@ -29,13 +32,14 @@
       messageDiv.textContent = "Processing...";
 
       const selectedYear = document.getElementById("selectedYear").value;
+      const selectedMonth = document.getElementById("selectedMonth").value;
       const userColumn = document.getElementById("userColumn").value;
 
       try {
         const response = await fetch("/api/generate-excel", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ selectedYear, userColumn }),
+          body: JSON.stringify({ selectedYear, userColumn, selectedMonth }),
         });
 
         if (response.ok) {

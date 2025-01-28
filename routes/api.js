@@ -13,9 +13,9 @@ const dbConfig = {
 
 // Endpoint do pobierania danych i generowania Excela
 router.post("/generate-excel", async (req, res) => {
-  const { selectedYear, userColumn } = req.body;
+  const { selectedYear, userColumn, selectedMonth } = req.body;
 
-  if (!selectedYear || !userColumn) {
+  if (!selectedYear || !userColumn || !selectedMonth) {
     return res.status(400).json({ error: "Invalid parameters." });
   }
 
@@ -25,21 +25,21 @@ router.post("/generate-excel", async (req, res) => {
     // Pobieranie danych z tabeli
     //const [rows] = await connection.query(`SELECT * FROM ${selectedYear}`);
     const [rows] = await connection.query(`
-SELECT Punch_ID, User, Location, Machine, Year, Month, Day, Hour, Minute, Second
+SELECT User, Year, Month, Day, Hour, Minute, Second
 FROM hubska
-WHERE Year = "${selectedYear}"
+WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
 UNION ALL
-SELECT Punch_ID, User, Location, Machine, Year, Month, Day, Hour, Minute, Second
+SELECT User, Year, Month, Day, Hour, Minute, Second
 FROM legnicka
-WHERE Year = "${selectedYear}"
+WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
 UNION ALL
-SELECT Punch_ID, User, Location, Machine, Year, Month, Day, Hour, Minute, Second
+SELECT User, Year, Month, Day, Hour, Minute, Second
 FROM jednosci
-WHERE Year = "${selectedYear}"
+WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
 UNION ALL
-SELECT Punch_ID, User, Location, Machine, Year, Month, Day, Hour, Minute, Second
+SELECT User, Year, Month, Day, Hour, Minute, Second
 FROM pugeta 
-WHERE Year = "${selectedYear}"
+WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
 ORDER BY Year, Month, Day, Hour, Minute, Second;
 `);
     await connection.end();
