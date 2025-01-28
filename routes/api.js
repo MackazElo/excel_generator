@@ -27,19 +27,19 @@ router.post("/generate-excel", async (req, res) => {
     const [rows] = await connection.query(`
 SELECT Punch_ID, User, Location, Machine, Year, Month, Day, Hour, Minute, Second
 FROM hubska
-WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
+WHERE Year = "${selectedYear}" 
 UNION ALL
 SELECT Punch_ID, User, Location, Machine, Year, Month, Day, Hour, Minute, Second
 FROM legnicka
-WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
+WHERE Year = "${selectedYear}" 
 UNION ALL
 SELECT Punch_ID, User, Location, Machine, Year, Month, Day, Hour, Minute, Second
 FROM jednosci
-WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
+WHERE Year = "${selectedYear}" 
 UNION ALL
 SELECT Punch_ID, User, Location, Machine, Year, Month, Day, Hour, Minute, Second
 FROM pugeta 
-WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
+WHERE Year = "${selectedYear}" 
 ORDER BY Year, Month, Day, Hour, Minute, Second;
 `);
     await connection.end();
