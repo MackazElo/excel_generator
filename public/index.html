@@ -10,11 +10,11 @@
   <div class="container">
     <h1>Excel Generator</h1>
     <form id="generate-form">
-      <label for="tableName">Table Name:</label>
-      <input type="text" id="tableName" name="tableName" required />
+      <label for="selectedYear">Year:</label>
+      <input type="text" id="selectedYear" name="selectedYear" required />
 
-      <label for="userColumn">User Column:</label>
-      <input type="text" id="userColumn" name="userColumn" required />
+      <label for="selectedMonth">Month:</label>
+      <input type="text" id="selectedMonth" name="selectedMonth" required />
 
       <button type="submit">Generate Excel</button>
     </form>
@@ -29,14 +29,14 @@
       event.preventDefault();
       messageDiv.textContent = "Processing...";
 
-      const tableName = document.getElementById("tableName").value;
-      const userColumn = document.getElementById("userColumn").value;
+      const selectedYear = document.getElementById("selectedYear").value;
+      const selectedMonth = document.getElementById("selectedMonth").value;
 
       try {
         const response = await fetch("/api/generate-excel", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ tableName, userColumn }),
+          body: JSON.stringify({ selectedYear, selectedMonth }),
         });
 
         if (response.ok) {

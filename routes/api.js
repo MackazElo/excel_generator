@@ -13,9 +13,9 @@ const dbConfig = {
 
 // Endpoint do pobierania danych i generowania Excela
 router.post("/generate-excel", async (req, res) => {
-  const { tableName, userColumn } = req.body;
+  const { selectedYear, selectedMonth } = req.body;
 
-  if (!tableName || !userColumn) {
+  if (!selectedYear || !selectedMonth) {
     return res.status(400).json({ error: "Invalid parameters." });
   }
 
@@ -23,30 +23,30 @@ router.post("/generate-excel", async (req, res) => {
     const connection = await mysql.createConnection(dbConfig);
 
     // Pobieranie danych z tabeli
-    //const [rows] = await connection.query(`SELECT * FROM ${tableName}`);
+    //const [rows] = await connection.query(`SELECT * FROM ${selectedYear}`);
     const [rows] = await connection.query(`
 SELECT Punch_ID, User, Location, Machine, Year, Month, Day, Hour, Minute, Second
 FROM hubska
-WHERE Year = "2025"
+WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
 UNION ALL
 SELECT Punch_ID, User, Location, Machine, Year, Month, Day, Hour, Minute, Second
 FROM legnicka
-WHERE Year = "2025"
+WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
 UNION ALL
 SELECT Punch_ID, User, Location, Machine, Year, Month, Day, Hour, Minute, Second
 FROM jednosci
-WHERE Year = "2025"
+WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
 UNION ALL
 SELECT Punch_ID, User, Location, Machine, Year, Month, Day, Hour, Minute, Second
 FROM pugeta 
-WHERE Year = "2025"
+WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
 ORDER BY Year, Month, Day, Hour, Minute, Second;
 `);
     await connection.end();
 
-    // Grupowanie danych według kolumny userColumn
+    // Grupowanie danych według kolumny selectedMonth
     const groupedData = rows.reduce((acc, row) => {
-      const userValue = row[userColumn];
+      const userValue = row[selectedMonth];
       if (!acc[userValue]) acc[userValue] = [];
       acc[userValue].push(row);
       return acc;
