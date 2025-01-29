@@ -68,10 +68,17 @@ GROUP BY User, Year, Month, Day;
 
       // Dodanie nagłówków do arkusza
       //data[0].push('aa');
-      data[0].Timedifference = '=1+2';
-      const headers = Object.keys(data[0]);
-      //console.log((data[0]));
-      sheet.addRow(headers);
+      sheet.columns = [
+        { header: 'Name', key: 'name', width: 20 },  // 1st column with width 20
+        { header: 'Location', key: 'location', width: 10 },   // 2nd column with width 10
+        { header: 'Year', key: 'year', width: 5 },  // 3rd column with width 15
+        { header: 'Month', key: 'month', width: 5 },  // 3rd column with width 15
+        { header: 'Day', key: 'day', width: 5 },  // 3rd column with width 15
+        { header: 'Time', key: 'time', width: 15 },  // 3rd column with width 15
+        { header: 'TimeDiffrence', key: 'TimeDiffrence', width: 15 }  // 3rd column with width 15
+        
+      ];
+    
 
 
       
