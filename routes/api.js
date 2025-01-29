@@ -13,6 +13,7 @@ const dbConfig = {
 
 // Endpoint do pobierania danych i generowania Excela
 router.post("/generate-excel", async (req, res) => {
+
   const { selectedYear, userColumn, selectedMonth } = req.body;
 
   if (!selectedYear || !userColumn || !selectedMonth) {
@@ -25,26 +26,32 @@ router.post("/generate-excel", async (req, res) => {
     // Pobieranie danych z tabeli
     //const [rows] = await connection.query(`SELECT * FROM ${selectedYear}`);
     const [rows] = await connection.query(`
-SELECT User, Year, Month, Day, Hour, Minute, Second
-FROM hubska
+SELECT 
+    CONCAT(e.User_ID, ' ', e.Name) AS UserName,
+    GROUP_CONCAT(DISTINCT Location SEPARATOR ', ') AS Location,
+    Year,
+    Month,
+    Day,
+    GROUP_CONCAT(CONCAT(Hour, ':', Minute, ':', Second) ORDER BY Hour, Minute, Second SEPARATOR ', ') AS Time
+    
+FROM (
+    SELECT User, Year, Month, Day, Hour, Minute, Second, 'hubska' AS Location FROM hubska
+    UNION ALL
+    SELECT User, Year, Month, Day, Hour, Minute, Second, 'legnicka' AS Location FROM legnicka
+    UNION ALL
+    SELECT User, Year, Month, Day, Hour, Minute, Second, 'jednosci' AS Location FROM jednosci
+    UNION ALL
+    SELECT User, Year, Month, Day, Hour, Minute, Second, 'pugeta' AS Location FROM pugeta
+) AS CombinedTables
+JOIN employees e ON CombinedTables.User = e.User_ID  
 WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
-UNION ALL
-SELECT User, Year, Month, Day, Hour, Minute, Second
-FROM legnicka
-WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
-UNION ALL
-SELECT User, Year, Month, Day, Hour, Minute, Second
-FROM jednosci
-WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
-UNION ALL
-SELECT User, Year, Month, Day, Hour, Minute, Second
-FROM pugeta 
-WHERE Year = "${selectedYear}" AND Month = "${selectedMonth}"
-ORDER BY Year, Month, Day, Hour, Minute, Second;
+GROUP BY User, Year, Month, Day;
 `);
+
+
     await connection.end();
 
-    // Grupowanie danych według kolumny userColumn
+    // Grupowanie danych według kolumny selectedMonth
     const groupedData = rows.reduce((acc, row) => {
       const userValue = row[userColumn];
       if (!acc[userValue]) acc[userValue] = [];
@@ -60,13 +67,22 @@ ORDER BY Year, Month, Day, Hour, Minute, Second;
       const data = groupedData[user];
 
       // Dodanie nagłówków do arkusza
+      //data[0].push('aa');
+      data[0].TimeDiffrence = '=1+2';
       const headers = Object.keys(data[0]);
+      console.log((data[0]));
       sheet.addRow(headers);
 
       // Dodanie danych
+      let  rowNumber = 2;
       data.forEach((row) => {
+        row.TimeDiffrence = `=D${rowNumber}+E${rowNumber}`;
+        // console.log(row);
+        //console.log(Object.values(row))
         sheet.addRow(Object.values(row));
+        rowNumber++;
       });
+      
     });
 
     // Wysyłanie pliku do klienta
