@@ -68,22 +68,30 @@ GROUP BY User, Year, Month, Day;
 
       // Dodanie nagłówków do arkusza
       //data[0].push('aa');
-      data[0].TimeDiffrence = '=1+2';
+      data[0].Timedifference = '=1+2';
       const headers = Object.keys(data[0]);
-      console.log((data[0]));
+      //console.log((data[0]));
       sheet.addRow(headers);
 
-      // Dodanie danych
-      let  rowNumber = 2;
-      data.forEach((row) => {
-        row.TimeDiffrence = `=D${rowNumber}+E${rowNumber}`;
-        // console.log(row);
-        //console.log(Object.values(row))
-        sheet.addRow(Object.values(row));
-        rowNumber++;
-      });
+
       
+      // Dodanie danych
+     
+      
+    let rowNumber = 2;
+    data.forEach((row, rowIndex) => {
+      row.TimeDifference = `=D${rowNumber}+E${rowNumber}`;
+      const rowValues = Object.values(row)
+      const excelRow = sheet.addRow(rowValues);
+  
+      // Add a formula to a specific column, e.g., in the last column of the row
+      // Assuming the custom column is the last one
+      const formulaCell = excelRow.getCell(excelRow.cellCount); // last cell in the row
+      const formula = `=D${rowIndex + 2} + E${rowIndex + 2}`; // Excel formula starts with =, and rowIndex+2 is used because row numbers in Excel are 1-based and the first row is for headers.
+      formulaCell.value = { formula: formula };  // Set the formula for that cell
+      rowNumber++;
     });
+  });
 
     // Wysyłanie pliku do klienta
     const fileName = `data_${Date.now()}.xlsx`;
